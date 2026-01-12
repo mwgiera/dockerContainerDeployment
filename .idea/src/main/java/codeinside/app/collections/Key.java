@@ -11,14 +11,16 @@ public final class Key {
         this.code = code;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Key)) return false;
         Key k = (Key) o;
         return id == k.id && Objects.equals(code, k.code);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(id, code);
     }
 }

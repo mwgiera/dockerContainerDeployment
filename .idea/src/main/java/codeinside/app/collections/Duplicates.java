@@ -11,9 +11,7 @@ public class Duplicates {
         if (nums == null) return dup;
 
         for (int n : nums) {
-            if (!seen.add(n)) {
-                dup.add(n);
-            }
+            if (!seen.add(n)) dup.add(n);
         }
         return dup;
     }
