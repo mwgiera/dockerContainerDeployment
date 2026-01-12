@@ -1,81 +1,95 @@
 package codeinside.app;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-
-import codeinside.app.katas.TwoSum;
-import codeinside.app.katas.WordCount;
-import codeinside.app.strings.Palindrome;
-import codeinside.app.collections.Duplicates;
+import codeinside.app.bank.Account;
+import codeinside.app.bank.InsufficientFundsException;
+import codeinside.app.bank.SavingsAccount;
+import codeinside.app.bank.PaymentProcessor;
+import codeinside.app.bank.BankTransferProcessor;
+import codeinside.app.bank.TransferService;
 
 public class Runner {
 
     public static void main(String[] args) {
-        System.out.println("=== Java Interview Mini Harness (Java 8 style) ===\n");
+        System.out.println("=== Java Interview Mini Harness (bank-style) ===\n");
 
-        testPalindrome();
-        testTwoSum();
-        testWordCount();
-        testDuplicates();
+        demoBankBasics();        // (1)-(5)
+        demoInterface();         // (6)
+        demoPolymorphism();      // (7)
 
-        System.out.println("\nDONE ✅");
+        System.out.println("DONE ✅");
     }
 
-    private static void testPalindrome() {
-        System.out.println("[Palindrome]");
-        assertEq(true, Palindrome.isPalindrome("A man, a plan, a canal: Panama"), "classic phrase");
-        assertEq(false, Palindrome.isPalindrome("race a car"), "not palindrome");
-        assertEq(true, Palindrome.isPalindrome(""), "empty string");
+    /**
+     * (1)-(5) Klasa/obiekt/metody + enum + wyjątek + static (generator numeru konta).
+     */
+    private static void demoBankBasics() {
+        System.out.println("[Bank Basics]");
+
+        Account a = new Account("Alice", 100);
+        System.out.println("Created: " + a);
+
+        a.deposit(50);
+        System.out.println("After deposit: " + a.getBalance());
+
+        a.withdraw(70);
+        System.out.println("After withdraw: " + a.getBalance());
+
+        try {
+            a.withdraw(999);
+        } catch (InsufficientFundsException e) {
+            System.out.println("Expected error: " + e.getMessage());
+        }
+
+        a.block();
+        try {
+            a.deposit(10);
+        } catch (IllegalStateException e) {
+            System.out.println("Expected status error: " + e.getMessage());
+        }
+
         System.out.println();
     }
 
-    private static void testTwoSum() {
-        System.out.println("[TwoSum]");
-        int[] a = new int[]{2, 7, 11, 15};
-        int[] r = TwoSum.twoSum(a, 9);
-        assertEq(true, Arrays.equals(new int[]{0, 1}, r), "2+7=9");
+    /**
+     * (6) Interfejs = "umowa co coś potrafi".
+     * Tu: TransferService nie musi wiedzieć JAK robisz przelew (API, mock, test),
+     * tylko że PaymentProcessor to potrafi.
+     */
+    private static void demoInterface() {
+        System.out.println("[Interface]");
 
-        int[] b = new int[]{3, 2, 4};
-        int[] r2 = TwoSum.twoSum(b, 6);
-        assertEq(true, Arrays.equals(new int[]{1, 2}, r2), "2+4=6");
+        PaymentProcessor processor = new BankTransferProcessor(); // konkretna implementacja
+        TransferService service = new TransferService(processor); // wstrzykujemy zależność
 
-        int[] c = new int[]{1, 2, 3};
-        int[] r3 = TwoSum.twoSum(c, 99);
-        assertEq(true, Arrays.equals(new int[]{-1, -1}, r3), "no solution");
+        Account from = new Account("Bob", 200);
+        Account to = new Account("Charlie", 10);
+
+        System.out.println("Before: from=" + from.getBalance() + " to=" + to.getBalance());
+        service.transfer(from, to, 50);
+        System.out.println("After:  from=" + from.getBalance() + " to=" + to.getBalance());
+
         System.out.println();
     }
 
-    private static void testWordCount() {
-        System.out.println("[WordCount]");
-        Map<String, Integer> m = WordCount.count("a a b  b   c");
-        assertEq(2, m.get("a"), "count a");
-        assertEq(2, m.get("b"), "count b");
-        assertEq(1, m.get("c"), "count c");
+    /**
+     * (7) Polimorfizm = "trzymam w ręku Account, ale zachowanie zależy od konkretu".
+     * SavingsAccount to Account, ale ma inne withdraw (np. opłata).
+     */
+    private static void demoPolymorphism() {
+        System.out.println("[Inheritance + Polymorphism]");
 
-        Map<String, Integer> empty = WordCount.count("   ");
-        assertEq(0, empty.size(), "blank input => empty map");
+        Account normal = new Account("Daisy", 100);
+        Account savings = new SavingsAccount("Eve", 100, 2); // fee=2
+
+        normal.withdraw(10);   // zabierze 10
+        savings.withdraw(10);  // zabierze 12 (10 + fee)
+
+        System.out.println("Normal balance:  " + normal.getBalance());
+        System.out.println("Savings balance: " + savings.getBalance());
+
+        System.out.println("Type(normal)  = " + normal.getClass().getSimpleName());
+        System.out.println("Type(savings) = " + savings.getClass().getSimpleName());
+
         System.out.println();
-    }
-
-    private static void testDuplicates() {
-        System.out.println("[Duplicates]");
-        Set<Integer> d = Duplicates.findDuplicates(new int[]{1, 2, 2, 3, 3, 3, 4});
-        assertEq(true, d.contains(2), "contains 2");
-        assertEq(true, d.contains(3), "contains 3");
-        assertEq(false, d.contains(1), "does not contain 1");
-        System.out.println();
-    }
-
-    // --- tiny assertion helpers (interview-friendly) ---
-    private static void assertEq(Object expected, Object actual, String name) {
-        boolean ok = (expected == null) ? (actual == null) : expected.equals(actual);
-        System.out.println((ok ? "  ✅ " : "  ❌ ") + name + " | expected=" + expected + " actual=" + actual);
-        if (!ok) throw new AssertionError("FAILED: " + name);
-    }
-
-    private static void assertEq(boolean expected, boolean actual, String name) {
-        System.out.println(((expected == actual) ? "  ✅ " : "  ❌ ") + name + " | expected=" + expected + " actual=" + actual);
-        if (expected != actual) throw new AssertionError("FAILED: " + name);
     }
 }
