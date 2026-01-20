@@ -1,0 +1,23 @@
+[project]
+name = "orbit-data-pipeline"
+version = "2.4.1"
+description = "Partner feed normalization pipeline"
+requires-python = ">=3.11"
+readme = "README.md"
+license = { text = "Proprietary" }
+
+dependencies = [
+  "pydantic>=2.7.4",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.3",
+  "ruff>=0.6.9",
+]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
