@@ -2,7 +2,6 @@ package codeinside.app.bank;
 
 /**
  * Implementacja interfejsu = konkret.
- * Tu udajemy "prawdziwy system bankowy" (na interview to wystarczy).
  */
 public class BankTransferProcessor implements PaymentProcessor {
 
