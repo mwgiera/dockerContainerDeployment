@@ -1,93 +1,93 @@
-mwgiera@icloud.com
+# Docker Container Deployment Portfolio
 
-                      JAVA OOP MINDMAP
-                                   |
-        ----------------------------------------------------------------
-        |                 |                 |               |          |
-     OOP Core        Encapsulation      Inheritance     Interfaces   Collections
-        |                 |                 |               |          |
-   Class (blueprint)   private fields     "is-a"         Contract     List (order)
-   Object (instance)   methods enforce    vs             "can do"     Set (unique)
-   Field (data)        rules              Composition    Swap impls   Map (key→value)
-   Method (action)     valid ctor         "has-a"
-   Polymorphism
-   (one type, many behaviors)
+This repository is a compact, recruiter-friendly portfolio showing practical work across API development, infrastructure-as-code, and data pipelines in a deployment-focused setup.
 
-        ----------------------------------------------------------------
-        |                 |                 |               |
-     Equality         Exceptions          State         Senior Habits
-        |                 |                 |               |
-   == same object     IllegalArg → bad   ACTIVE         Small methods
-   equals() value     IllegalState →     BLOCKED        Clear names
-   hashCode() rule    wrong mode         CLOSED         Keep invariants
-                                         Check first    Interfaces = what/how
+It is designed to demonstrate how services are built, validated, and prepared for reliable container/cloud execution.
 
-        ----------------------------------------------------------------
-        |
-     Override vs Overload
-        |
-   Override → same signature, new behavior (child)
-   Overload → same name, different params (same class)
+---
 
-        ----------------------------------------------------------------
-       |
-   Clean, readable Java
-   Correctness → simplicity
-   Ask when unsure, iterate fast
+## Why this repository exists
 
+Hiring managers and support/platform teams usually look for proof of three things:
 
+- can you build and debug services,
+- can you provision and manage infrastructure safely,
+- can you document and operate systems clearly.
 
+This repository bundles those signals into one place.
 
-                         ┌─────────────────────────────┐
-                         │          UI / APP            │
-                         │  (klik: przelew / wypłata)   │
-                         └──────────────┬──────────────┘
-                                        │
-                                        v
-                         ┌─────────────────────────────┐
-                         │        TransferService       │
-                         │  (logika biznesowa: transfer)│
-                         └──────────────┬──────────────┘
-        Kompozycja (HAS-A)              │
-   ┌─────────────────────────┐         │         ┌─────────────────────────┐
-   │ PaymentProcessor (iface)│<────────┘         │ FraudChecker (opcjonalnie)│
-   │ "UMOWA: process(...)"   │                   │ "czy podejrzane?"         │
-   └──────────────┬──────────┘                   └─────────────────────────┘
-     Polimorfizm  │
-  (podmienność)   │
-      ┌───────────┴───────────┐
-      v                       v
-┌───────────────────┐   ┌────────────────────┐
-│ BankTransferProc  │   │ MockProcessor       │
-│ (prawdziwa logika)│   │ (do testów)         │
-└──────────┬────────┘   └────────────────────┘
-           │
-           v
- ┌─────────────────────────────┐
- │  AccountRepository (Map)     │
- │  Map<accountNo, Account>     │
- └──────────────┬──────────────┘
-                │  Map = szybkie znalezienie po kluczu
-                v
-      ┌────────────────────┐
-      │ Account (base)      │  <--- enkapsulacja: private balance
-      │  - accountNo (final)│  <--- final = tożsamość
-      │  - balance (private)│
-      │  - withdraw()       │
-      └─────────┬──────────┘
-     Dziedziczenie (IS-A)   │
-                            │ Polimorfizm: jedna metoda, różne zachowanie
-        ┌───────────────────┴───────────────────┐
-        v                                       v
-┌──────────────────────┐                ┌──────────────────────┐
-│ SavingsAccount        │                │ BusinessAccount       │
-│ override withdraw()   │                │ override withdraw()   │
-│ (fee / rules)         │                │ (overdraft rules)     │
-└──────────────────────┘                └──────────────────────┘
+---
 
-   List<Transaction> = historia (kolejność, duplikaty)
-   Set<CustomerId>   = unikalność (np. zbiory)
-   TreeMap           = raport posortowany (audyt)
-   Exceptions         = kontrolowane "STOP": InsufficientFunds, IllegalArgument
+## Repository layout
 
-   
+```text
+dockerContainerDeployment/
+├── repositories/
+│   ├── atlas-api/            # TypeScript API service
+│   ├── harbor-infra/         # Terraform infrastructure modules + env configs
+│   └── orbit-data-pipeline/  # Python data pipeline
+├── qodana.yaml               # static analysis configuration
+└── README.md
+```
+
+---
+
+## Included projects
+
+### 1) Atlas API (`repositories/atlas-api`)
+- TypeScript API service with modular routing and structured config.
+- Includes health endpoint support and test/build scripts.
+- Demonstrates backend service design and operability basics.
+
+### 2) Harbor Infrastructure (`repositories/harbor-infra`)
+- Terraform modules and environment configuration.
+- Shows repeatable environment provisioning patterns.
+- Demonstrates infrastructure discipline and deployment readiness.
+
+### 3) Orbit Data Pipeline (`repositories/orbit-data-pipeline`)
+- Python pipeline with staged processing (extract, validate, transform, publish).
+- Includes testing setup and operational notes.
+- Demonstrates data reliability and contract-based processing.
+
+---
+
+## Skills demonstrated
+
+- backend API development (Node.js/TypeScript)
+- infrastructure-as-code (Terraform)
+- data pipeline engineering (Python)
+- testing and quality checks
+- deployment-aware documentation and structure
+
+---
+
+## How to run each component
+
+Use each project directory independently:
+
+```bash
+# API service
+cd repositories/atlas-api
+npm install
+npm run dev
+
+# Infrastructure
+cd repositories/harbor-infra/envs/staging
+terraform init
+terraform plan
+
+# Data pipeline
+cd repositories/orbit-data-pipeline
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .[dev]
+pytest
+```
+
+---
+
+## Suggested next improvements
+
+- Add Dockerfiles for each runnable service.
+- Add a root `docker-compose.yml` for local multi-service orchestration.
+- Add CI workflow to run API tests + pipeline tests + Terraform validate in one pipeline.
