@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "bug_example.py", line 8, in <module>
+    fetch_data()
+KeyError: 'results'
